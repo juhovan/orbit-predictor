@@ -37,6 +37,8 @@ logger = logging.getLogger(__name__)
 TLE = namedtuple('TLE',
                  ['sate_id', 'lines', 'date'])
 
+timeout = 60
+
 
 class GPSSource:
     def get_position_ecef(self, sate_id, when_utc):
@@ -146,7 +148,7 @@ class WSTLESource(TLESource):
         url = urlparse.urlunsplit((url.scheme, url.netloc, url.path, query_string, url.fragment))
         headers = {'user-agent': 'orbit-predictor', 'Accept': 'application/json'}
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=timeout)
         except requests.exceptions.RequestException as error:
             logger.error("Exception requesting TLE: %s", error)
             raise
@@ -169,7 +171,7 @@ class NoradTLESource(TLESource):
     def from_url(cls, url):
         headers = {'user-agent': 'orbit-predictor', 'Accept': 'text/plain'}
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=timeout)
         except requests.exceptions.RequestException as error:
             logger.error("Exception requesting TLE: %s", error)
             raise
